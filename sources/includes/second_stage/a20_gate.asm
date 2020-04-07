@@ -1,7 +1,15 @@
 check_a20_gate:
-    pusha                                   ; Save all general purpose registers on the stack
+	pusha             
+	mov ax,0x2402
+	int 0x15
+	jc .error
+	cmp al,0x0
+	je .enable_a20
+	popa         
+	ret
 
-            ; This function need to be written by you.
-
-    popa                                ; Restore all general purpose registers from the stack
-    ret
+enable_a20:
+	mov ax,0x2401
+	int 0x15
+	jc .error
+	jmp .check_gate
