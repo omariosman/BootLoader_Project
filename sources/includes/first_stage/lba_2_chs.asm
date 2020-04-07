@@ -1,5 +1,6 @@
  ;************************************** lba_2_chs.asm **************************************
  lba_2_chs:  
+	pusha
 	xor dx,dx 
 	mov ax, [lba_sector] 
 	div word [spt] 

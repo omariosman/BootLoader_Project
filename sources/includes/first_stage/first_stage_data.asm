@@ -8,7 +8,6 @@ Head db 0x0
 Sector dw 0x0
 det_boot_msg db 'Detecting Boot Disk', 13 , 10, 0
 success db 'Done Sucessfully', 13, 10, 0
-fail db 'Fail', 13, 10, 0
 disk_error_msg db 'Disk Error', 13, 10, 0
 fault_msg db 'Unknown Boot Device', 13, 10, 0
 booted_from_msg db 'Booted from ', 0

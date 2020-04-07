@@ -38,10 +38,10 @@
                                
 
 ; Enable the below code when you load successfully the second stage bootloader sectors
-;      mov si,second_stage_loaded_msg      ; Print a message indicated that second stage boot loader sectors are loaded from disl
-;      call bios_print
-;      call get_key_stroke                 ; Wait for key storke to jump to second boot stage
-;      jmp SECOND_STAGE_OFFSET             ; We perform what we call a long jump as we are going to jump to another segment jmp ox1000:0x0000
+      mov si,second_stage_loaded_msg      ; Print a message indicated that second stage boot loader sectors are loaded from disl
+      call bios_print
+      call get_key_stroke                 ; Wait for key storke to jump to second boot stage
+      jmp SECOND_STAGE_OFFSET             ; We perform what we call a long jump as we are going to jump to another segment jmp ox1000:0x0000
 
       hang:             
             hlt         

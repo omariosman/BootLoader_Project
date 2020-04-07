@@ -7,6 +7,7 @@ read_disk_sectors:
 	add bx,[disk_read_offset]
 	mov dl,[boot_drive]
 	.read_sector_loop:
+
 	call lba_2_chs
 	mov ah, 0x2
 	mov al,0x1
@@ -24,6 +25,8 @@ read_disk_sectors:
 	jl .read_sector_loop
 	jmp .finish
 	.read_disk_error:
+	mov si, dot
+	call bios_print
 	mov si,disk_error_msg
 	call bios_print
 	jmp hang

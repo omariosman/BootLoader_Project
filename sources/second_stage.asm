@@ -9,22 +9,22 @@ BITS 16
 %define PTR_MEM_REGIONS_TABLE       0x18
 ;********************************* Main Program **************************************
       call bios_cls
-      mov si, greeting_msg    ; store the address of the string msg into si so we can use lodsb later.
-      call bios_print         ; Call the bios_print subroutine to print msg on the screen. 
-      call get_key_stroke     ; Wait for key storke to jump to second boot stage
+      mov si, greeting_msg 
+      call bios_print       
+      call get_key_stroke  
       call check_a20_gate
       call check_long_mode
       call memory_scanner
       call print_memory_regions
-      call get_key_stroke     ; Wait for key storke to jump to second boot stage
+      call get_key_stroke  
       call build_page_table   
       call disable_pic
       call load_idt_descriptor
       call switch_to_long_mode
-      hang:                   ; An infinite loop just in case interrupts are enabled. More on that later.
-            hlt               ; Halt will suspend the execution. This will not return unless the processor got interrupted.
-            jmp hang          ; Jump to hang so we can halt again.
-;************************************* Data ******************************************
+      hang:              
+            hlt          
+            jmp hang     
+;*********************************** Data ******************************************
 
 
 greeting_msg      db "___  ___      _____ _____          ___  _   _ _____ ", 13, 10
