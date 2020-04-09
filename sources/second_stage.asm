@@ -12,15 +12,32 @@ BITS 16
       mov si, greeting_msg 
       call bios_print       
       call get_key_stroke  
+      mov si, a20_not_enabled_msg
+      call bios_print
+ 
+	mov si, press_any_key
+	call bios_print  
+call get_key_stroke
       call check_a20_gate
-      call check_long_mode
+
+	mov si, press_any_key
+	call bios_print
+call get_key_stroke      
+call check_long_mode
+
+        mov si, press_any_key
+	call bios_print
+call get_key_stroke
       call memory_scanner
+call get_key_stroke
+        mov si, press_any_key
+call bios_print
       call print_memory_regions
-      call get_key_stroke  
-      call build_page_table   
-      call disable_pic
-      call load_idt_descriptor
-      call switch_to_long_mode
+      ;call get_key_stroke  
+      ;call build_page_table   
+      ;call disable_pic
+      ;call load_idt_descriptor
+      ;call switch_to_long_mode
       hang:              
             hlt          
             jmp hang     
@@ -69,6 +86,7 @@ memory_scan_failed_msg db 'Memory Scan Failed',13,10,0
 read_region_msg db 'read memory region',13,10,0
 pic_disabled_msg db 'PIC disabled',13,10,0
 pml4_page_table_msg db 'PML4 page table created successfully',13,10,0
+press_any_key db 'press any key to resume!', 13, 10,0
 video_x db 0
 video_y db 0
 ;**************************** Subroutines/Functions **********************************

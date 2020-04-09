@@ -20,4 +20,3 @@ dot db '.',0
 newline db 13,10,0
 disk_read_segment dw 0
 disk_read_offset dw 0
-
