@@ -37,10 +37,14 @@ channel_loop:
     jl channel_loop
     
 
+
 call init_idt
 call setup_idt
 mov rsi,hello_world_str
 call video_print
+
+call start_here
+
 
 kernel_halt: 
     hlt
@@ -55,7 +59,7 @@ kernel_halt:
       %include "sources/includes/third_stage/video.asm"
       %include "sources/includes/third_stage/pit.asm"
       %include "sources/includes/third_stage/ata.asm"
-
+    %include "sources/includes/third_stage/big_page_table.asm"
 ;*******************************************************************************************************************
 
 

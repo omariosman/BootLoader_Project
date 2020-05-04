@@ -7,6 +7,7 @@ BITS 16
 %define M_REGIONS_SEGMENT           0x2000
 %define PTR_MEM_REGIONS_COUNT       0x0000
 %define PTR_MEM_REGIONS_TABLE       0x18
+%define PAGE_TABLE_EFFECTIVE_ADDRESS 0x100000
 ;********************************* Main Program **************************************
       call bios_cls
       mov si, greeting_msg 
@@ -33,11 +34,15 @@ call get_key_stroke
         mov si, press_any_key
 call bios_print
       call print_memory_regions
-      ;call get_key_stroke  
-      ;call build_page_table   
-      ;call disable_pic
-      ;call load_idt_descriptor
-      ;call switch_to_long_mode
+      call get_key_stroke  
+      call build_page_table   
+      call disable_pic
+     ;call get_key_stroke
+      call load_idt_descriptor
+
+      ;call video clear
+      call video_cls_16   
+      call switch_to_long_mode
       hang:              
             hlt          
             jmp hang     
@@ -105,9 +110,12 @@ video_y db 0
       %include "sources/includes/second_stage/longmode.asm"
 
 ;**************************** Long Mode 64-bit  **********************************
+
+    lgdt [GDT64.Pointer] ; Load GDT.Pointer de  fined below.
+    jmp CODE_SEG:LM64 ; Load CS with 64 bit GDT segment and flush the instruction cache
 [BITS 64]
 
-LongModeEntry:
+LM64:
 
     mov ax, DATA_SEG ; Set data segment to GDT Data Segment selector
     mov ds, ax
@@ -116,7 +124,6 @@ LongModeEntry:
     mov gs, ax
 
     jmp 0x10000
-
 lm_hang:             ; Halt Loop
       hlt
       jmp lm_hang

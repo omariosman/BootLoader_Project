@@ -19,11 +19,6 @@
       call bios_print           
       mov si, det_boot_msg
       call bios_print
-      mov si, press_to_resume
-      call bios_print
-      call get_key_stroke
-      mov si, success
-      call bios_print          
       call detect_boot_disk              
       mov di,0x8
       mov word [disk_read_segment],SECOND_STAGE_CODE_SEG
@@ -58,9 +53,43 @@
       %include "sources/includes/first_stage/get_key_stroke.asm"
 ;**************************** Padding and Signature **********************************
 
-      times 510-($-$$) db 0   
-                              
-                               
+      times 446-($-$$) db 0   
+      db 0x80                 ;Boot/Active indicator
+      db 0x0                  ;Starting Head Number
+      dw 0x0001               ;Starting Sector (1 in lower 6 bits) and starting cylinder (0 higher 10 bits)
+      db 0x0               ;System ID
+      db 0xFF                 ;Ending Head Number 255
+      dw 0xFFFF               ;Ending Sector (63 in lower 6 bits) and ending cylinder (1023 in higher 10 bits)
+      dd 0x0                  ;LBA Relative Sector Number is 0 (the MBR sector)
+      dd 0x3F                 ;Total number of sector is 63 
+
+      db 0x0                 ;Boot/Active indicator
+      db 0x0                  ;Starting Head Number
+      dw 0x0000               ;Starting Sector (lower 6 bits) and starting cylinder (higher 10 bits)
+      db 0               ;System ID
+      db 0x00                 ;Ending Head Number
+      dw 0x0000               ;Ending Sector (lower 6 bits) and ending cylinder (higher 10 bits)
+      dd 0x0                  ;LBA Relative Sector Number is 0 (MBR sector)
+      dd 0x0                  ;Total number of sector 
+
+      db 0x0                 ;Boot/Active indicator
+      db 0x0                  ;Starting Head Number
+      dw 0x0000               ;Starting Sector (lower 6 bits) and starting cylinder (higher 10 bits)
+      db 0              ;System ID
+      db 0x00                 ;Ending Head Number
+      dw 0x0000               ;Ending Sector (lower 6 bits) and ending cylinder (higher 10 bits)
+      dd 0x0                  ;LBA Relative Sector Number is 0 (MBR sector)
+      dd 0x0                  ;Total number of sector
+
+      db 0x0                 ;Boot/Active indicator
+      db 0x0                  ;Starting Head Number
+      dw 0x0000               ;Starting Sector (lower 6 bits) and starting cylinder (higher 10 bits)
+      db 0               ;System ID
+      db 0x00                 ;Ending Head Number
+      dw 0x0000               ;Ending Sector (lower 6 bits) and ending cylinder (higher 10 bits)
+      dd 0x0                  ;LBA Relative Sector Number is 0 (MBR sector)
+      dd 0x0                  ;Total number of sector
+
       db 0x55,0xAA            
 
 

@@ -3,10 +3,21 @@
 %define VIDEO_BUFFER_EFFECTIVE_ADDRESS          0xB8000
 %define VIDEO_SIZE      0X0FA0    ; 25*80*2
     video_cls_16:
-            pusha                                   ; Save all general purpose registers on the stack
+    pusha                                   ; Save all general purpose registers on the stack
 
-                  ; This function need to be written by you.
+    mov eax, 0x0
+    mov ecx, VIDEO_SIZE
+    mov ebx, VIDEO_BUFFER_EFFECTIVE_ADDRESS
+    loop:
+    mov byte[ebx],' '     ; Else Store the charcater into current video location
+    inc ebx                ; Increment current video location
+    inc eax
+    mov byte[ebx],0x00   ; Store Black Background
+    inc ebx
+    inc eax
+    cmp eax, ecx
+    jne loop
 
-            popa                                ; Restore all general purpose registers from the stack
-            ret
+     popa                                ; Restore all general purpose registers from the stack
+     ret
 
