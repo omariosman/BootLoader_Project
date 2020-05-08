@@ -9,40 +9,40 @@ BITS 16
 %define PTR_MEM_REGIONS_TABLE       0x18
 %define PAGE_TABLE_EFFECTIVE_ADDRESS 0x100000
 ;********************************* Main Program **************************************
-      call bios_cls
-      mov si, greeting_msg 
+      call bios_cls ;clear
+      mov si, greeting_msg  ;print greeting msg
       call bios_print       
-      call get_key_stroke  
-      mov si, a20_not_enabled_msg
+      call get_key_stroke  ;wait until any key is presssed
+      mov si, a20_not_enabled_msg ;a20 not enbled msg
       call bios_print
  
-	mov si, press_any_key
+	mov si, press_any_key ;press any key msg
 	call bios_print  
-call get_key_stroke
-      call check_a20_gate
+call get_key_stroke ;wait until any key is pressed
+      call check_a20_gate ;check a20 gate enabled or not
 
-	mov si, press_any_key
+	mov si, press_any_key ;press any key msg printing on the screeen using bios interrupts
 	call bios_print
 call get_key_stroke      
-call check_long_mode
+call check_long_mode ;check if long mode is supported or not
 
         mov si, press_any_key
 	call bios_print
 call get_key_stroke
-      call memory_scanner
+      call memory_scanner ;scan all the mem regions an put its attributes in the memory in the third segment ever attr in 24 byrtes
 call get_key_stroke
         mov si, press_any_key
 call bios_print
-      call print_memory_regions
+      call print_memory_regions ;print mem region eahc with ists base address then legnth then type 
       call get_key_stroke  
-      call build_page_table   
-      call disable_pic
+      call build_page_table   ;build page table that maps 2MB of the mmoery
+      call disable_pic ;siable pipc to diable any interrupts while switching to long mode
      ;call get_key_stroke
-      call load_idt_descriptor
+      call load_idt_descriptor ;overwrite ivt of the bios
 
       ;call video clear
-      call video_cls_16   
-      call switch_to_long_mode
+      call video_cls_16   ;clear screen with black spaces
+      call switch_to_long_mode ;switch to long mode 64 
       hang:              
             hlt          
             jmp hang     
@@ -111,8 +111,7 @@ video_y db 0
 
 ;**************************** Long Mode 64-bit  **********************************
 
-    lgdt [GDT64.Pointer] ; Load GDT.Pointer de  fined below.
-    jmp CODE_SEG:LM64 ; Load CS with 64 bit GDT segment and flush the instruction cache
+    
 [BITS 64]
 
 LM64:

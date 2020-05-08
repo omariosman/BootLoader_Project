@@ -4,44 +4,51 @@
 %define PAGE_PRESENT_WRITE 0x3 ; 011b
 %define MEM_PAGE_4K 0x1000
 build_page_table:
+;push all the registers before going int othe function
 pusha
-; Store into es:di 0x000:0x1000 where the page table should be stored
+;adjust the segment:offset foramt to resetting all the 16k needed for the page table
 mov ax,PAGE_TABLE_BASE_ADDRESS
 mov es,ax
 xor eax,eax
 mov edi,PAGE_TABLE_BASE_OFFSET
-; Initialize 4 memory pages
-mov ecx, 0x1000 ; set rep counter to 4096
-xor eax, eax ; Zero out eax
-cld ; Clear direction flag
-rep stosd ; Store EAX (4 bytes) at address ES:EDI
-; rep will repeat for 4096 and advance EDI by 4 each time
-; 4 * 4096 = 4 * 4 KB = 16 KB = 4 memory pages
+;ecx is the o=coutner at which rep will work for
+mov ecx, 0x1000 
+;xor with itself to set it to zero
+xor eax, eax 
+;clear 4 bytes at a time
+cld 
+;store ehat is at eax into the tnry pointoed to by es:di
+rep stosd 
 
-mov edi,PAGE_TABLE_BASE_OFFSET ; Reset di to point to 0x1000
-; PML4 is now at [es:di] = [0x0000:0x1000]
-lea eax, [es:di + MEM_PAGE_4K] ; Store the address of the next page into eax (PDP Table).
-or eax, PAGE_PRESENT_WRITE ; Set the Present and the Writable flags: bit 0 and bit 1.
-mov [es:di], eax ; Store eax = 0x2003 into the first entry of the PML4.
-; PDP is now at [es:di] = [0x0000:0x2000]
+;edi starting address of page table
+mov edi,PAGE_TABLE_BASE_OFFSET 
+
+;load effective addr
+lea eax, [es:di + MEM_PAGE_4K] 
+or eax, PAGE_PRESENT_WRITE 
+mov [es:di], eax 
+
+;increment pointer by 4k
 add di,MEM_PAGE_4K
-lea eax, [es:di + MEM_PAGE_4K] ; Store the address of the next page into eax (PDP Table).
-or eax, PAGE_PRESENT_WRITE ; Set the Present and the Writable flags: bit 0 and bit 1.
-mov [es:di], eax ; Store eax = 0x3003 into the first entry of the PML4.
-; PD is now at [es:di] = [0x0000:0x3000]
+lea eax, [es:di + MEM_PAGE_4K]
+or eax, PAGE_PRESENT_WRITE 
+mov [es:di], eax 
+
+;increment pointer to the next level
 add di,MEM_PAGE_4K
-lea eax, [es:di + MEM_PAGE_4K] ; Store the address of the next page into eax (PDP Table).
-or eax, PAGE_PRESENT_WRITE ; Set the Present and the Writable flags: bit 0 and bit 1.
-mov [es:di], eax ; Store eax = 0x4003 into the first entry of the PML4.
-; PT is now at [es:di] = [0x0000:0x4000]
+lea eax, [es:di + MEM_PAGE_4K] 
+or eax, PAGE_PRESENT_WRITE 
+mov [es:di], eax 
+
+;advance pointer by 4k
 add di,MEM_PAGE_4K
-mov eax, PAGE_PRESENT_WRITE ; Store 0x0003 to eax.
-.pte_loop: ; Fill 512 entries of the PT to point to the first 2 MB of physical memory
+mov eax, PAGE_PRESENT_WRITE 
+.pte_loop: 
 mov [es:di], eax
 add eax, MEM_PAGE_4K
 add di, 0x8
-cmp eax, 0x200000 ; Check if we mapped 2 MB.
-jl .pte_loop ; Jump if we still not mapped 2 MB
+cmp eax, 0x200000 
+jl .pte_loop 
 popa
 ret
 

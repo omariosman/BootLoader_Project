@@ -6,7 +6,10 @@ then you have two opitons
 
 then the stages will run in front of you on a virtual machine screen
 you will need to press keys in order to move on to the next stage of the project
-then it will hang at the end
+It will show you a message as animation
+then it will move to the third stage 
+it will create page table
+and then print messags from inside this table
 
 
 

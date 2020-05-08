@@ -1,5 +1,5 @@
 GDT64:
-	.Null: equ $ - GDT64 ; The null descriptor.
+	.Null: equ $ - GDT64 ; The first entry wich called the null descriptor.
 	dw 0 ; Limit (low).
 	dw 0 ; Base (low).
 	db 0 ; Base (middle)

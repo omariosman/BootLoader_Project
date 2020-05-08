@@ -17,11 +17,210 @@ IDT_DESCRIPTOR:         ; The label indicating the address of the IDT descriptor
       .Size dw    0x1000                   ; Table size is zero (word, 16-bit) -> 256 x 16 bytes
       .Base dq    IDT_BASE_ADDRESS         ; Table base address is NULL (Double word, 64-bit)
 
-load_idt_descriptor:
+
+load_idt_descriptor: ; A routine that loads the IDT descriptor
     pushaq
-    ; This function need to be written by you.
+    lidt [IDT_DESCRIPTOR] ; load the IDT descriptor
     popaq
     ret
+    mov rsi,isr0 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,0
+    call setup_idt_entry
+    
+    mov rsi,isr1 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,1
+    call setup_idt_entry
+
+    mov rsi,isr2 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,2
+    call setup_idt_entry
+
+    mov rsi,isr3 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,3
+    call setup_idt_entry
+
+    mov rsi,isr4 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,4
+    call setup_idt_entry
+
+    mov rsi,isr5 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,5
+    call setup_idt_entry
+
+    mov rsi,isr6 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,6
+    call setup_idt_entry
+
+    mov rsi,isr7 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,7
+    call setup_idt_entry
+
+    mov rsi,isr8 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,8
+    call setup_idt_entry
+
+    mov rsi,isr9 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,9
+    call setup_idt_entry
+
+    mov rsi,isr10 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,10
+    call setup_idt_entry
+
+    mov rsi,isr11 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,11
+    call setup_idt_entry
+
+    mov rsi,isr12 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,12
+    call setup_idt_entry
+
+    mov rsi,isr13 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,13
+    call setup_idt_entry
+
+    mov rsi,isr14 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,14
+    call setup_idt_entry
+
+    mov rsi,isr15 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,15
+    call setup_idt_entry
+
+    mov rsi,isr16 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,16
+    call setup_idt_entry
+
+    mov rsi,isr17 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,17
+    call setup_idt_entry
+
+    mov rsi,isr18 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,18
+    call setup_idt_entry
+
+    mov rsi,isr19 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,0
+    call setup_idt_entry
+
+    mov rsi,isr20 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,20
+    call setup_idt_entry
+
+    mov rsi,isr21 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,21
+    call setup_idt_entry
+
+    mov rsi,isr22 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,22
+    call setup_idt_entry
+
+    mov rsi,isr23 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,23
+    call setup_idt_entry
+
+    mov rsi,isr24 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,24
+    call setup_idt_entry
+
+    mov rsi,isr25 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,25
+    call setup_idt_entry
+
+    mov rsi,isr26 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,26
+    call setup_idt_entry
+
+    mov rsi,isr27 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,27
+    call setup_idt_entry
+
+    mov rsi,isr28 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,28
+    call setup_idt_entry
+
+    mov rsi,isr29 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,29
+    call setup_idt_entry
+
+    mov rsi,isr30 ; setup_idt_entry expects that RDI = address of handler, and RDI = interrupt number
+    mov rdi,30
+    call setup_idt_entry
+
+
+    mov rsi,isr31
+    mov rdi,31
+    call setup_idt_entry
+;########################
+    mov rsi,irq0
+    mov rdi,32
+    call setup_idt_entry
+
+    mov rsi,irq1
+    mov rdi,33
+    call setup_idt_entry
+
+    mov rsi,irq2
+    mov rdi,34
+    call setup_idt_entry
+
+    mov rsi,irq3
+    mov rdi,35
+    call setup_idt_entry
+
+    mov rsi,irq4
+    mov rdi,36
+    call setup_idt_entry
+
+    mov rsi,irq5
+    mov rdi,37
+    call setup_idt_entry
+
+    mov rsi,irq6
+    mov rdi,38
+    call setup_idt_entry
+
+    mov rsi,irq7
+    mov rdi,39
+    call setup_idt_entry
+
+    mov rsi,irq8
+    mov rdi,40
+    call setup_idt_entry
+
+    mov rsi,irq9
+    mov rdi,41
+    call setup_idt_entry
+
+    mov rsi,irq10
+    mov rdi,42
+    call setup_idt_entry
+
+    mov rsi,irq11
+    mov rdi,43
+    call setup_idt_entry
+
+    mov rsi,irq12
+    mov rdi,44
+    call setup_idt_entry
+
+    mov rsi,irq13
+    mov rdi,45
+    call setup_idt_entry
+
+  mov rsi,irq14
+    mov rdi,46
+    call setup_idt_entry
+
+
+
+
+    mov rsi,irq15
+    mov rdi,47
+    call setup_idt_entry
+    call load_idt_descriptor ; Every time we modify the IDT we need to load the IDT descriptor
+
+;###########################################
 
 
 init_idt:         ; Intialize the IDT which is 256 entries each entry corresponds to an interrupt number
@@ -33,52 +232,95 @@ init_idt:         ; Intialize the IDT which is 256 entries each entry correspond
       ret
 
 
+%define IDT_HANDLERS_BASE_ADDRESS 0x41000 ; 0x4000:0x1000 which is free
 register_idt_handler: ; Store a handler into the handler array
-                        ; RDI contains the interrupt number
-                        ; RSI contains the handler address
-      pushaq            ; SSave all general purpose registers
-     ; This function need to be written by you.
-      popaq             ; Restore general purpose registers
-      ret
+    ; RDI contains the interrupt number
+    ; RSI contains the handler address
+    pushaq ; Save all general purpose registers
+    shl rdi,3 ; Multiply interrupt number by 8 -> the index in handler array
+    mov [rdi+IDT_HANDLERS_BASE_ADDRESS],rsi ; Store handler address in the corresponding array location
+    popaq ; Restore general purpose registers
+    ret
+
+idt_default_handler:
+    pushaq
+    ;Do anything general here
+    popaq
+    ret
 
 setup_idt:
-      pushaq
-            ; This function need to be written by you.
-      popaq
-      ret
+          pushaq
+                ; This function need to be written by you.
+          popaq
+          ret
 
 
 setup_idt_entry:  ; Setup and interrupt entry in the IDT
-                  ; RDI: Interrupt Number
-                  ; RSI: Address of the handler
-      pushaq
-            ; This function need to be written by you.
-      popaq
-      ret
+    ; RDI: Interrupt Number
+    ; RSI: Address of the handler
+    pushaq
+    shl rdi,4 ; multiply interrupt number by 16 (entry location into IDT)
+    add rdi,IDT_BASE_ADDRESS ; Add the IDT base address
+    mov rax,rsi ; Calculate lower 16-bit of base address and store it
+    and ax,0xFFFF
+    mov [rdi+IDT_ENTRY.base_low],ax
+    mov rax,rsi ; Calculate middle 16-bit of base address and store it
+    shr rax, 16
+    and ax,0xFFFF
+    mov [rdi+IDT_ENTRY.base_mid],ax
+    mov rax,rsi ; Calculate high 16-bit of base address and store it
+    shr rax, 32
+    and eax,0xFFFFFFFF
+    mov [rdi+IDT_ENTRY.base_high],eax
+    mov [rdi+IDT_ENTRY.selector], byte 0x8 ; The Selector is the GDT code segment index
+    mov [rdi+IDT_ENTRY.reserved_ist], byte 0x0
+    mov [rdi+IDT_ENTRY.reserved], dword 0x0
+    mov [rdi+IDT_ENTRY.flags], byte IDT_P_KERNEL_INTERRUPT_GATE ; 0x8E, 1 00 0 1110 -> P DPL Z Int_Gate
+    popaq
+    ret
 
-idt_default_handler:
-      pushaq
-;            This is the default
-      popaq
-      ret
+
 
 isr_common_stub:
-      pushaq                  ; Save all general purpose registers
-       ; This function need to be written by you.
-      .out:
-      popaq                   ; Restore all the general purpose registers
-      add rsp,16              ; Make up for the interruot number and the error code pushed by the macros
-      sti                     ; Enable interrupts -> not neccessary, why:
-      iretq           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+    pushaq ; Save all general purpose registers
+    cli ; Disable interrupt
+    mov rdi,rsp ; Set RDI to the stack pointer
+    mov rax,[rdi+120] ; Fetch the Interrupt number that was pushed by the macro
+    shl rax,3 ; Multiple interrupt number by 8 -> offset in handlers array
+    mov rax,[IDT_HANDLERS_BASE_ADDRESS+rax] ; Get the address of the registered routine
+    cmp rax,0 ; Compare address with NULL
+    je .call_default ; If yes, the no registered routine for the interrupt and we execute the default
+    call rax ; Else call the registered routine
+    jmp .out ; Skip the default
+    .call_default:
+        call idt_default_handler ; Call the default routine
+    .out:
+        popaq ; Restore all the general purpose registers
+        add rsp,16 ; Make up for the interrupt number and the error code pushed by the macros
+        sti ; Enable interrupts -> not necessary, why?
+        iretq
 
 irq_common_stub:
-      pushaq                  ; Save all general purpose registers
-      ; This function need to be written by you.
-      .out:
-      popaq                   ; Restore all the general purpose registers
-      add rsp,16              ; Make up for the interruot number and the error code pushed by the macros
-      sti                     ; Enable interrupts -> not neccessary, why:
-      iretq           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+    pushaq ; Save all general purpose registers
+    cli ; Disable interrupt
+    mov rdi,rsp ; Set RDI to the stack pointer
+    mov rax,[rdi+120] ; Fetch the Interrupt number that was pushed by the macro
+    shl rax,3 ; Multiple interrupt number by 8 -> offset in handlers array
+    mov rax,[IDT_HANDLERS_BASE_ADDRESS+rax] ; Get the address of the registered routine
+    cmp rax,0 ; Compare address with NULL
+    je .call_default ; If yes, the no registered routine for the interrupt and we execute the default
+    call rax ; Else call the registered routine
+    mov al,0x20 ; VERY IMPORTANT: Send EOI to PIC
+    out MASTER_PIC_COMMAND_PORT,al
+    out SLAVE_PIC_COMMAND_PORT,al
+    jmp .out ; Skip the default
+    .call_default:
+    call idt_default_handler ; Call the default routine
+    .out:
+    popaq ; Restore all the general purpose registers
+    add rsp,16 ; Make up for the interrupt number and the error code pushed by the macros
+    sti ; Enable interrupts -> not necessary, why?
+    iretq ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
 
 
