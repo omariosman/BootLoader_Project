@@ -54,9 +54,10 @@ set_irq_mask:
     popaq
     ret
 
-    clear_irq_mask:
+clear_irq_mask:
         pushaq
         ; This function need to be written by you.
         .out:    
         popaq
         ret
+

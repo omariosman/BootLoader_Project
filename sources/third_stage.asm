@@ -2,9 +2,6 @@
 
 [BITS 64]
 
-
-
-
 Kernel:
 
 bus_loop:
@@ -47,11 +44,16 @@ channel_loop:
 ;call bitmap_constructor
 
 
+
+
 ;address is in rcx
-mov rcx, 0x100000
+
 mov r8, 0x200 ;512
+mov rcx, 0x100000
+
 looping2:
-mov qword[rcx], 0
+
+mov qword[rcx], 0x0
 add rcx, 0x8
 dec r8
 cmp r8, 0
@@ -60,9 +62,12 @@ jmp looping2
 
 
 
+
+
 start_now:
-call start_here
-call tester_function
+
+    call start_here
+;call tester_function
 
 
 kernel_halt: 
@@ -84,12 +89,13 @@ kernel_halt:
 
 colon db ':',0
 comma db ',',0
-dot db '.', 0
+dot db '.',13, 0
+flag dw 0
 newline db 13,0
-allocate1_msg db 'PML4 Allocation     '
-allocate2_msg db '    Level 2 Allocation     '
-allocate3_msg db '    Level 3 Allocation     '
-pte_msg db '       This is PTE Level     '
+allocate1_msg db 'PML4 Allocation',13,0
+allocate2_msg db 'Level 2 Allocation',13,0
+allocate3_msg db 'Level 3 Allocation',13,0
+pte_msg db 'This is PTE Level',13,0
 end_of_string  db 13        ; The end of the string indicator
 start_location   dq  0x0  ; A default start position (Line # 8)
 

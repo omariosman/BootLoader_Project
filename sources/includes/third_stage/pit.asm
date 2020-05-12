@@ -12,7 +12,7 @@ handle_pit:
       pushaq
             mov rdi,[pit_counter]         ; Value to be printed in hexa
             push qword [start_location]
-            mov qword [start_location],0
+            mov qword [start_location],0   ; This should be edited to accomodate with the scorallable screen
             call bios_print_hexa          ; Print pit_counter in hexa
             pop qword [start_location]
             inc qword [pit_counter]       ; Increment pit_counter
@@ -40,3 +40,4 @@ configure_pit:
 	  
 	  
 	
+

@@ -54,25 +54,28 @@ xor rax,rax
     xor rbx,rbx ;| (function << 8)
     mov bl,[function]
     shl ebx,8
-    or eax,ebxs
+    or eax,ebx
     or eax,0x80000000 ;| ( 0x80000000)
     xor rsi,rsi ; Zero out RSI as we will use it as an offset
     pci_config_space_read_loop:
-    push rax ; Save Initial Command Register
-    ;| (offset & 0xfc)
-    or rax,rsi
-    and al,0xfc ; This ensures the the last 2 bits are zeros
-    ; Write to port from Command Port
-    mov dx,CONFIG_ADDRESS
-    out dx,eax
-    ; Write to port from Data Port
-    mov dx,CONFIG_DATA
-    xor rax,rax
-    in eax,dx
-    ; Store the double word (32-bit) read into a memory region
-    mov [pci_header+rsi],eax
-    add rsi,0x4 ; Advance Offset
-    pop rax ; Restore the Initial Command Register
-    cmp rsi,0xff ; Check if we have read the whole 256 Configuration Space
-    jl pci_config_space_read_loop
-    ret
+        push rax ; Save Initial Command Register
+        ;| (offset & 0xfc)
+        or rax,rsi
+        and al,0xfc ; This ensures the the last 2 bits are zeros
+        ; Write to port from Command Port
+        mov dx,CONFIG_ADDRESS
+        out dx,eax
+        ; Write to port from Data Port
+        mov dx,CONFIG_DATA
+        xor rax,rax
+        in eax,dx
+        ; Store the double word (32-bit) read into a memory region
+        mov [pci_header+rsi],eax
+        add rsi,0x4 ; Advance Offset
+        pop rax ; Restore the Initial Command Register
+        cmp rsi,0xff ; Check if we have read the whole 256 Configuration Space
+
+        jl pci_config_space_read_loop
+
+ ret
+

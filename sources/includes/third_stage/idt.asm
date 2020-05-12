@@ -151,7 +151,7 @@ load_idt_descriptor: ; A routine that loads the IDT descriptor
     mov rsi,isr31
     mov rdi,31
     call setup_idt_entry
-;########################
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     mov rsi,irq0
     mov rdi,32
     call setup_idt_entry
@@ -220,7 +220,7 @@ load_idt_descriptor: ; A routine that loads the IDT descriptor
     call setup_idt_entry
     call load_idt_descriptor ; Every time we modify the IDT we need to load the IDT descriptor
 
-;###########################################
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 init_idt:         ; Intialize the IDT which is 256 entries each entry corresponds to an interrupt number
@@ -426,3 +426,4 @@ IRQ  15,    47
 
 isr255:
         iretq
+
