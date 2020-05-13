@@ -43,7 +43,9 @@ check_type_loop:
 mov r9, qword[r8] ;Base Address
 add r8, 0x8 ;move r8 to point to the length 
 mov r11, qword[r8] ;Length
+
 add r11, r9
+  
 
  ;r9 < address < r11
 ;Base address < physical frame < base address + length
@@ -99,8 +101,7 @@ add rcx, 0x1000 ;+4k
 
 mov r8, 0x0
 loop_construct_page_table:
-    mov rsi, dot
-    call video_print
+
 	call page_walk
 
  	add r8, 0x1000

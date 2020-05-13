@@ -7,6 +7,8 @@ Kernel:
 bus_loop:
     device_loop:
         function_loop:
+    mov rdi, 0x10
+call video_print_hexa
            ; call get_pci_device
             inc byte [function]
             cmp byte [function],8
@@ -21,6 +23,7 @@ bus_loop:
     jne bus_loop
 
 channel_loop:
+
     mov qword [ata_master_var],0x0
     master_slave_loop:
         mov rdi,[ata_channel_var]
