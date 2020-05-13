@@ -228,6 +228,7 @@ init_idt:         ; Intialize the IDT which is 256 entries each entry correspond
                   ; Table total size if 4KB = 256 * 16 = 4096 bytes
       pushaq
       ; This function need to be written by you.
+    ;i think we ca make it all zeros here
       popaq
       ret
 
@@ -251,6 +252,7 @@ idt_default_handler:
 setup_idt:
           pushaq
                 ; This function need to be written by you.
+        ; i think we can load lidt register by the address of the idt here
           popaq
           ret
 
