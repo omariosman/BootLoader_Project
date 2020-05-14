@@ -2,51 +2,6 @@
 
 [BITS 64]
 
-Kernel:
-
-bus_loop:
-    device_loop:
-        function_loop:
-    mov rdi, 0x10
-call video_print_hexa
-           ; call get_pci_device
-            inc byte [function]
-            cmp byte [function],8
-        jne device_loop
-        inc byte [device]
-        mov byte [function],0x0
-        cmp byte [device],32
-        jne device_loop
-    inc byte [bus]
-    mov byte [device],0x0
-    cmp byte [bus],255
-    jne bus_loop
-
-channel_loop:
-
-    mov qword [ata_master_var],0x0
-    master_slave_loop:
-        mov rdi,[ata_channel_var]
-        mov rsi,[ata_master_var]
-     ;   call ata_identify_disk
-        inc qword [ata_master_var]
-        cmp qword [ata_master_var],0x2
-        jl master_slave_loop
-
-    inc qword [ata_channel_var]
-    inc qword [ata_channel_var]
-    cmp qword [ata_channel_var],0x4
-    jl channel_loop
-    
-
-
-;call init_idt
-;call setup_idt
-
-
-;call bitmap_constructor
-
-
 
 
 ;address is in rcx
@@ -70,7 +25,54 @@ jmp looping2
 start_now:
 
     call start_here
-;call tester_function
+call tester
+
+Kernel:
+
+bus_loop:
+    device_loop:
+        function_loop:
+
+            call get_pci_device
+            inc byte [function]
+            cmp byte [function],8
+        jne function_loop
+        inc byte [device]
+        mov byte [function],0x0
+        cmp byte [device],32
+        jne device_loop
+    inc byte [bus]
+    mov byte [device],0x0
+    cmp byte [bus],255
+    jne bus_loop
+
+channel_loop:
+
+    mov qword [ata_master_var],0x0
+    master_slave_loop:
+        mov rdi,[ata_channel_var]
+        mov rsi,[ata_master_var]
+      call ata_identify_disk
+        inc qword [ata_master_var]
+        cmp qword [ata_master_var],0x2
+        jl master_slave_loop
+
+    inc qword [ata_channel_var]
+    inc qword [ata_channel_var]
+    cmp qword [ata_channel_var],0x4
+    jl channel_loop
+    
+
+
+call init_idt
+call setup_idt
+
+
+;call bitmap_constructor
+
+
+
+
 
 
 kernel_halt: 
@@ -80,12 +82,12 @@ kernel_halt:
 
 ;*******************************************************************************************************************
       %include "sources/includes/third_stage/pushaq.asm"
-     ; %include "sources/includes/third_stage/pic.asm"
-      ;%include "sources/includes/third_stage/idt.asm"
-      ;%include "sources/includes/third_stage/pci.asm"
+      %include "sources/includes/third_stage/pic.asm"
+      %include "sources/includes/third_stage/idt.asm"
+      %include "sources/includes/third_stage/pci.asm"
       %include "sources/includes/third_stage/video.asm"
-     ; %include "sources/includes/third_stage/pit.asm"
-      ;%include "sources/includes/third_stage/ata.asm"
+      %include "sources/includes/third_stage/pit.asm"
+      %include "sources/includes/third_stage/ata.asm"
     %include "sources/includes/third_stage/big_page_table.asm"
 ;*******************************************************************************************************************
 
@@ -115,4 +117,4 @@ start_location   dq  0x0  ; A default start position (Line # 8)
     ALIGN 4
 
 
-times 8192-($-$$) db 0
+times 8592-($-$$) db 0

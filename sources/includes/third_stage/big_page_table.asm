@@ -6,7 +6,6 @@ pushaq
 mov r8, 0x200 ;512
 looping:
 
-
 mov qword[rcx], 0
 add rcx, 0x8 ;advance pointer by 1 byte
 dec r8 ;decrement one from counter
@@ -102,12 +101,18 @@ add rcx, 0x1000 ;+4k
 mov r8, 0x0
 loop_construct_page_table:
 
+;mov rdi, r8
+;call video_print_hexa
+;mov rsi, newline
+;call video_print
 	call page_walk
 
  	add r8, 0x1000
     mov r9, 0x140000000;0x10019FC00
     cmp r8, r9
     jl loop_construct_page_table
+    mov rdi, 0x100000
+    mov cr3, rdi
     ret
 	
 
@@ -155,7 +160,7 @@ jmp skip1
 
 allocate1:
 mov rsi, allocate1_msg
-call video_print
+;call video_print
 
 mov r14, rcx ;last physical of the page table
 
@@ -198,7 +203,7 @@ jmp skip2
 
 allocate2:
 mov rsi, allocate2_msg
-call video_print
+;call video_print
 
 mov r14, rcx
 call loop_over_mem_regions ;send physical address
@@ -235,7 +240,7 @@ jmp skip3
 
 allocate3:
 mov rsi, allocate3_msg
-call video_print
+;call video_print
 ;Check Bitmap
 ;call extract_bit
 ;check on the address
@@ -269,7 +274,7 @@ approve_allocate3:
 	;mov cr3, rdi
 skip3:
 mov rsi, dot
-call video_print
+;call video_print
 shl r10, 3
 add r10, [r11]
 cmp qword[r10], 0
@@ -278,9 +283,11 @@ jmp skip4
 
 allocate4:
 mov rsi, pte_msg
-call video_print
+;call video_print
 
 mov r14, rbx
+cmp r14, 0x200000
+jl approve_allocate4
 call loop_over_mem_regions ;send physical address
 
 
@@ -304,8 +311,29 @@ approve_allocate4:
 	mov [r10], rbx ;mov last physical into the entry
 	mov r15, rbx 		;update last_page_physical
 	add rbx, 0x1000 ;increment by 4k last phys
-	mov rdi, 0x100000
-	mov cr3, rdi
+	;mov rdi, 0x100000
+	;mov cr3, rdi
 skip4:
-
+;mov rsi, hello_world_str
+;call video_print
 ret
+
+
+
+
+tester:
+mov byte[rbx], dot
+mov rsi, rbx
+call video_print
+ret
+
+
+
+
+
+
+
+
+
+
+
