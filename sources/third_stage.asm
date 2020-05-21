@@ -1,3 +1,4 @@
+
 [ORG 0x10000]
 
 [BITS 64]
@@ -21,7 +22,6 @@ jmp looping2
 
 
 
-
 start_now:
 
     call start_here
@@ -34,6 +34,7 @@ bus_loop:
         function_loop:
 
             call get_pci_device
+           ; call e1000_pci_config       ; check if the device if e1000 NIC
             inc byte [function]
             cmp byte [function],8
         jne function_loop
@@ -52,7 +53,7 @@ channel_loop:
     master_slave_loop:
         mov rdi,[ata_channel_var]
         mov rsi,[ata_master_var]
-      call ata_identify_disk
+     ; call ata_identify_disk
         inc qword [ata_master_var]
         cmp qword [ata_master_var],0x2
         jl master_slave_loop
@@ -61,11 +62,12 @@ channel_loop:
     inc qword [ata_channel_var]
     cmp qword [ata_channel_var],0x4
     jl channel_loop
-    
+   
 
 
-call init_idt
-call setup_idt
+;call init_idt
+;call setup_idt
+;call e1000_init
 
 
 ;call bitmap_constructor
@@ -75,7 +77,7 @@ call setup_idt
 
 
 
-kernel_halt: 
+kernel_halt:
     hlt
     jmp kernel_halt
 
@@ -86,8 +88,9 @@ kernel_halt:
       %include "sources/includes/third_stage/idt.asm"
       %include "sources/includes/third_stage/pci.asm"
       %include "sources/includes/third_stage/video.asm"
-      %include "sources/includes/third_stage/pit.asm"
-      %include "sources/includes/third_stage/ata.asm"
+      ;%include "sources/includes/third_stage/pit.asm"
+    ;  %include "sources/includes/third_stage/ata.asm"
+      ;%include "sources/includes/third_stage/nic.asm"
     %include "sources/includes/third_stage/big_page_table.asm"
 ;*******************************************************************************************************************
 
@@ -117,4 +120,4 @@ start_location   dq  0x0  ; A default start position (Line # 8)
     ALIGN 4
 
 
-times 8592-($-$$) db 0
+times 8650-($-$$) db 0

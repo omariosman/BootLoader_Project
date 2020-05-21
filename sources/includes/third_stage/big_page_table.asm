@@ -1,5 +1,5 @@
 ;This function allocates physical frame to the page table by putting zeros in the entries
-build_page_table2: 
+build_page_table2:
 pushaq
 
 ;address is in rcx
@@ -18,6 +18,7 @@ my_return:
 popaq
 ret
 
+;current_memory_address resq 1
 
 loop_over_mem_regions:
 
@@ -40,11 +41,11 @@ check_type_loop:
 
 ;This loops over all the memory to check if this address iwthing the range of type 1 or not
 mov r9, qword[r8] ;Base Address
-add r8, 0x8 ;move r8 to point to the length 
+add r8, 0x8 ;move r8 to point to the length
 mov r11, qword[r8] ;Length
 
 add r11, r9
-  
+ 
 
  ;r9 < address < r11
 ;Base address < physical frame < base address + length
@@ -55,15 +56,15 @@ cmp r14, r9
 jg second_compare
 jl edit_first
 second_compare:
-	cmp r14, r11 ;flag set
-	jng within_range
+cmp r14, r11 ;flag set
+jng within_range
     jmp edit_first
-	
+
 edit_first:
-	add r8, 0x10 ;add 16 bytes to make the pointer points to the start of the next entry 
+add r8, 0x10 ;add 16 bytes to make the pointer points to the start of the next entry
     cmp r8, r10
-	jl check_type_loop
-    jmp make_flag_0 
+jl check_type_loop
+    jmp make_flag_0
 within_range:
 
 ;let’s check the type here
@@ -73,15 +74,15 @@ cmp r9, 0x1 ;if type 1
 je make_flag_1 ;type 1 confirm
 jmp make_flag_0
 make_flag_1:
-	mov byte[flag], 0x1
-    
-	jmp return
+mov byte[flag], 0x1
+   
+jmp return
 make_flag_0:
-	mov byte[flag], 0x0
+mov byte[flag], 0x0
 return:
 
 
-;restore all the registers to get out fro m the function 
+;restore all the registers to get out fro m the function
 popaq
 ret
 
@@ -105,16 +106,16 @@ loop_construct_page_table:
 ;call video_print_hexa
 ;mov rsi, newline
 ;call video_print
-	call page_walk
+call page_walk
 
- 	add r8, 0x1000
+  add r8, 0x1000
     mov r9, 0x140000000;0x10019FC00
     cmp r8, r9
     jl loop_construct_page_table
     mov rdi, 0x100000
     mov cr3, rdi
     ret
-	
+
 
 ;############################################################################
 
@@ -160,77 +161,77 @@ jmp skip1
 
 allocate1:
 mov rsi, allocate1_msg
-;call video_print
+call video_print
 
 mov r14, rcx ;last physical of the page table
 
-call loop_over_mem_regions ;send physical address
+;call loop_over_mem_regions ;send physical address
 
 
 
 
 
 
-cmp byte[flag], 0x1
+;cmp byte[flag], 0x1
 je approve_allocate1
 jmp adjust_then_call1
 
 adjust_then_call1:
-	add rcx, 0x1000 ;add 4k on last phys
+add rcx, 0x1000 ;add 4k on last phys
     mov r14, rcx
-	call loop_over_mem_regions  
-	cmp byte[flag], 0x1
-	je approve_allocate1
-	jmp adjust_then_call1
+call loop_over_mem_regions  
+cmp byte[flag], 0x1
+je approve_allocate1
+jmp adjust_then_call1
 approve_allocate1:
 
 
     call build_page_table2
 
-	or rcx, 0x3 ;present and R/W bits 011b
-	mov [r13], rcx ;mov last physical into the entry
-	mov r15, rcx 		;update last_page_physical
-	add rcx, 0x1000 ;increment by 4k last phys
-	;mov rdi, 0x100000
-	;mov cr3, rdi
+or rcx, 0x3 ;present and R/W bits 011b
+mov [r13], rcx ;mov last physical into the entry
+;mov [current_memory_address], rcx ;update last_page_physical
+add rcx, 0x1000 ;increment by 4k last phys
+;mov rdi, 0x100000
+;mov cr3, rdi
 skip1:
 
 shl r12, 3 ;mult 8
-add r12, [r13] ;[r13] is the starting address of this page table level 
+add r12, [r13] ;[r13] is the starting address of this page table level
 cmp qword[r12], 0
 je allocate2
 jmp skip2
 
 allocate2:
 mov rsi, allocate2_msg
-;call video_print
+call video_print
 
 mov r14, rcx
-call loop_over_mem_regions ;send physical address
+;call loop_over_mem_regions ;send physical address
 ;if type 1 or not
 ;if rax = 1 it is type 1
 ;else if rax = 0, it is not type 1
 
 
-cmp byte[flag], 0x1
+;cmp byte[flag], 0x1
 je approve_allocate2
 jmp adjust_then_call2
 
 adjust_then_call2:
-	add rcx, 0x1000 ;add 4k on last phys
+add rcx, 0x1000 ;add 4k on last phys
     mov r14, rcx
-	call loop_over_mem_regions  
-	cmp byte[flag], 0x1
-	je approve_allocate2
-	jmp adjust_then_call2
+call loop_over_mem_regions  
+cmp byte[flag], 0x1
+je approve_allocate2
+jmp adjust_then_call2
 approve_allocate2:
     call build_page_table2
-	or rcx, 0x3 ;present and R/W bits 011b
-	mov [r12], rcx ;mov last physical into the entry
-	mov r15, rcx 		;update last_page_physical
-	add rcx, 0x1000 ;increment by 4k last phys
-	;mov rdi, 0x100000
-	;mov cr3, rdi
+or rcx, 0x3 ;present and R/W bits 011b
+mov [r12], rcx ;mov last physical into the entry
+;mov [current_memory_address], rcx ;update last_page_physical
+add rcx, 0x1000 ;increment by 4k last phys
+;mov rdi, 0x100000
+;mov cr3, rdi
 skip2:
 shl r11, 3
 add r11, [r12]
@@ -240,7 +241,7 @@ jmp skip3
 
 allocate3:
 mov rsi, allocate3_msg
-;call video_print
+call video_print
 ;Check Bitmap
 ;call extract_bit
 ;check on the address
@@ -258,20 +259,20 @@ jmp adjust_then_call3
 adjust_then_call3:
     add rcx, 0x1000 ;add 4k on last phys
     mov r14, rcx
-	call loop_over_mem_regions  
-	cmp byte[flag], 0x1
-	je approve_allocate3
-	jmp adjust_then_call3
+call loop_over_mem_regions  
+cmp byte[flag], 0x1
+je approve_allocate3
+jmp adjust_then_call3
 
-approve_allocate3: 
+approve_allocate3:
        
     call build_page_table2
-	or rcx, 0x3 ;present and R/W bits 011b
-	mov [r11], rcx ;mov last physical into the entry
-	mov r15, rcx 		;update last_page_physical
-	add rcx, 0x1000 ;increment by 4k last phys
-	;mov rdi, 0x100000
-	;mov cr3, rdi
+or rcx, 0x3 ;present and R/W bits 011b
+mov [r11], rcx ;mov last physical into the entry
+;mov [current_memory_address], rcx ;update last_page_physical
+add rcx, 0x1000 ;increment by 4k last phys
+;mov rdi, 0x100000
+;mov cr3, rdi
 skip3:
 mov rsi, dot
 ;call video_print
@@ -283,57 +284,70 @@ jmp skip4
 
 allocate4:
 mov rsi, pte_msg
-;call video_print
+call video_print
 
 mov r14, rbx
 cmp r14, 0x200000
 jl approve_allocate4
-call loop_over_mem_regions ;send physical address
+;call loop_over_mem_regions ;send physical address
 
 
-cmp byte[flag], 0x1
+;cmp byte[flag], 0x1
 
 je approve_allocate4
 jmp adjust_then_call4
 
 adjust_then_call4:
  
-	add rbx, 0x1000 ;add 4k on last phys
+add rbx, 0x1000 ;add 4k on last phys
     mov r14, rbx
-	call loop_over_mem_regions  
-	cmp byte[flag], 0x1
-	je approve_allocate4
-	jmp adjust_then_call4
+call loop_over_mem_regions  
+cmp byte[flag], 0x1
+je approve_allocate4
+jmp adjust_then_call4
 approve_allocate4:
     ;shl rbx, 0xC ;shift by 12 bits
     ;or rbx, r9 ;oring with offset
-    
-	mov [r10], rbx ;mov last physical into the entry
-	mov r15, rbx 		;update last_page_physical
-	add rbx, 0x1000 ;increment by 4k last phys
-	;mov rdi, 0x100000
-	;mov cr3, rdi
+   
+mov [r10], rbx ;mov last physical into the entry
+;mov [current_memory_address], rbx ;update last_page_physical
+add rbx, 0x1000 ;increment by 4k last phys
+;mov rdi, 0x100000
+;mov cr3, rdi
 skip4:
 ;mov rsi, hello_world_str
 ;call video_print
 ret
 
 
-
+;##############################
+;TESTER
 
 tester:
-mov byte[rbx], dot
-mov rsi, rbx
-call video_print
+
+pushaq
+mov rbx, 0x10019FC00 ;the last physical address in the memory
+mov rax, r15 ; last physical address of the page table place in memory
+add r15, 0x100 ;add 4k
+test:
+mov byte[rax], 0x5 ; write any value in current address say 5
+mov cl,byte[rax] ; read the value in the current address into cl
+cmp cl, byte[rax] ;compare what we read with what we wrote
+
+jne error_msg
+;mov rsi, rax ;move the address to rsi to print it
+;call video_print ;print on the screen
+
+inc rax ; move to next byte
+cmp rax, rbx ; check if size of mem is reached
+jg out
+jmp test
+
+error_msg:
+jmp out
+
+out:
+popaq
 ret
-
-
-
-
-
-
-
-
-
 
 

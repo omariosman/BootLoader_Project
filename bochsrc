@@ -1,8 +1,8 @@
 config_interface: textconfig
 #display_library: x, options="gui_debug"
 #display_library: x
-#romimage: file=../../bochs/bochs-2.6.11/bios/BIOS-bochs-latest
-romimage: file=./bochs/bochs-2.6.11/bios/BIOS-bochs-latest
+#romimage: file=bochs-2.6.11/bios/BIOS-bochs-latest
+romimage: file=bochs-2.6.11/bios/BIOS-bochs-latest
 vgaromimage: file=/usr/share/vgabios/vgabios.bin
 #clock: sync=realtime
 #debug: action=ignore, cpu0=report

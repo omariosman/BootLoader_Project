@@ -1,6 +1,6 @@
 ;******************************* second_stage.asm ************************************
 
-ORG 0xC000        ; Since this code will be loaded at 0xC000 we need all the addresses to be relative to 0xC000
+[ORG 0xC000]        ; Since this code will be loaded at 0xC000 we need all the addresses to be relative to 0xC000
                   ; The ORG directive tells the linker to generate all addresses relative to 0xC000   
 BITS 16
 

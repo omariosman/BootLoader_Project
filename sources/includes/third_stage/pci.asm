@@ -1,4 +1,3 @@
-;*******************************************************************************************************************
 %define CONFIG_ADDRESS  0xcf8
 %define CONFIG_DATA     0xcfc
 
@@ -7,7 +6,7 @@ pci_header times 512 db 0
 
 
 
-struc PCI_CONF_SPACE 
+struc PCI_CONF_SPACE
 .vendor_id          resw    1
 .device_id          resw    1
 .command            resw    1
@@ -38,44 +37,42 @@ get_pci_device:
 
 xor rax,rax
     ;Compose the Command Register: ((bus << 16) | (device << 11) | (function << 8) | (offset & 0xfc) | ( 0x80000000))
-    ; Bit 23-16 : bus (so we shift left 16 bits))
-    ; Bit 15-11 : device (so we shift left 11 bits))
-    ; Bit 10-8 : function (so we shift left 8 bits))
+ 
     ; Bit 7-2 : so we clear the last two bytes by & 0xfc
-    ; Bit 31 : Enable bit, and to set it we | 0x80000000
-    xor rbx,rbx ;((bus << 16)
-    mov bl,[bus]
-    shl ebx,16
-    or eax,ebx
-    xor rbx,rbx ;|(device << 11)
-    mov bl,[device]
-    shl ebx,11
-    or eax,ebx
-    xor rbx,rbx ;| (function << 8)
+   
+    xor rbx,rbx ;we zero out the rbx
+    mov bl,[bus]  ; value of bus will ve stored in bl
+    shl ebx,16     ; shift left  16 bits
+    or eax,ebx       ; we need to store what is in ebx into eax
+    xor rbx,rbx ;clear the rbx to store (device << 11)
+    mov bl,[device]  
+    shl ebx,11   ;another shiftleft by 11 bits to put the device number in its place
+    or eax,ebx     ;eax has the the bus and decvice
+    xor rbx,rbx ;clear rbx again for the (function << 8)
     mov bl,[function]
-    shl ebx,8
+    shl ebx,8  ;shift left by 8bits to put the offset in its place
     or eax,ebx
-    or eax,0x80000000 ;| ( 0x80000000)
-    xor rsi,rsi ; Zero out RSI as we will use it as an offset
+    or eax,0x80000000 ;enaling  Bit 31
+    xor rsi,rsi ; clear out rsi
+;we need a loop to read 256 bytes
     pci_config_space_read_loop:
-        push rax ; Save Initial Command Register
-        ;| (offset & 0xfc)
-        or rax,rsi
-        and al,0xfc ; This ensures the the last 2 bits are zeros
-        ; Write to port from Command Port
+        push rax  
+     
+        or rax,rsi  ;
+        and al,0xfc ;set the last 2 bits to zero
+       
         mov dx,CONFIG_ADDRESS
         out dx,eax
-        ; Write to port from Data Port
+ 
         mov dx,CONFIG_DATA
         xor rax,rax
         in eax,dx
-        ; Store the double word (32-bit) read into a memory region
-        mov [pci_header+rsi],eax
-        add rsi,0x4 ; Advance Offset
-        pop rax ; Restore the Initial Command Register
-        cmp rsi,0xff ; Check if we have read the whole 256 Configuration Space
+       
+        mov [pci_header+rsi],eax ;store in pci_header the 256 bit of the header
+        add rsi,0x4 ; increment rsi
+        pop rax
+        cmp rsi,0xff ;make sure that the 256 were read when rsi =ff
 
         jl pci_config_space_read_loop
 
  ret
-

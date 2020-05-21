@@ -67,9 +67,10 @@ clear_irq_mask:
     .master: ; If we are here we know which port we are going to use and the IRQ is set right
     in eax,dx ; Read the IMR into eax
     mov rcx,rdi ; Move rdi to rcx
-    mov rdi,0xFFFFFFFFFFFFF7FF ; Move 0x0000000000000000000000000000000000000000000000000000000000000001 to rdi
+
+    mov rdi,0x1
     shl rdi,cl ; Shift left the value in rdi with IRQ value
-    and rax,rdi ; Move back rdi to rax
+    xor rax,rdi ; Move back rdi to rax
     out dx,eax ; Write to the data port to save the IMR with the new mask
     .out:    
     popaq

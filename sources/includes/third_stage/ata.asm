@@ -128,10 +128,11 @@ ata_copy_pci_header:
 select_ata_disk:              ; rdi = channel, rsi = master/slave
     pushaq
     xor rax,rax ; Zero out RAX
-    mov dx,[ata_base_io_ports+rdi] ; Fetch channel corresponding base I/O port
-    add dx,ATA_REG_HDDEVSEL ; Add port offset for selecting the drive
-    mov al,byte [ata_drv_selector+rsi] ; Fetch the corresponding drive value, master/slave
-    out dx,al ; Output to port
+    mov dx,[ata_base_io_ports+rdi] ;we get the channel that is the base IO port to add to it the offset
+    add dx,ATA_REG_HDDEVSEL ; We add the offset to the base_io_port to get the selected drive to fetch its value
+    mov al,byte [ata_drv_selector+rsi] ; we get the ata drive selector value to  know if it is 0= Master and 1= Slave
+    out dx,al ; Output to port the the value of the drive selector to operate on
+    ;this will set the controller to operate on that drive for corresponding cycles
     popaq
     ret
 
@@ -143,85 +144,86 @@ ata_print_size:
 
 
 ata_identify_disk:              ; rdi = channel, rsi = master/slave
+; this reads the data from the disk
     pushaq
-    xor rax,00000000b ; refresh channel
+    xor rax,00000000b ; refresh and initialize the channel that will use to read from a disk
     mov dx,[ata_control_ports+rdi]
     out dx,al
-    call select_ata_disk ; Select Disk to send the identify packet
+    call select_ata_disk ; this selects the disk we would like to send to it the IDENTIFY packet
     xor rax,rax ; Zero out RAX
-    mov dx,[ata_base_io_ports+rdi] ; Send out zero to sector count, lba0, lba1, and lba2
+    mov dx,[ata_base_io_ports+rdi] ; zerooing out a number sector number
     add dx,ATA_REG_SECCOUNT0
     out dx,al
-    mov dx,[ata_base_io_ports+rdi]
+    mov dx,[ata_base_io_ports+rdi] ;zerooing out lba0
     add dx,ATA_REG_LBA0
     out dx,al
-    mov dx,[ata_base_io_ports+rdi]
+    mov dx,[ata_base_io_ports+rdi] ;zerroing out lba1
     add dx,ATA_REG_LBA1
     out dx,al
-    mov dx,[ata_base_io_ports+rdi]
+    mov dx,[ata_base_io_ports+rdi]; zerooing out lba2
     add dx,ATA_REG_LBA2
     out dx,al
-    mov dx,[ata_base_io_ports+rdi] ; Send Identify command
+    mov dx,[ata_base_io_ports+rdi] ; Send Identify command to the ata
     add dx,ATA_REG_COMMAND
     mov al,ATA_CMD_IDENTIFY
     out dx,al
-    mov dx,[ata_base_io_ports+rdi] ; Read the status for the first time
+    mov dx,[ata_base_io_ports+rdi] ; Read the status of the drive if it is less than two then we have an error and must report it
     add dx,ATA_REG_STATUS
     in al, dx
     cmp al, 0x2
-    jl .error ;Error if status is less than 2
-    .check_ready:
-    ; A loop that checks status has an error or PIO Ready
+    jl .error 
+    .check_ready: ; we need to wait untill the disk controller is ready and hence will keep reading and if one of the follwoing errors happens will report it
+
         mov dx,[ata_base_io_ports+rdi]
         add dx,ATA_REG_STATUS
         in al, dx
         xor rcx,rcx
         mov cl,ATA_SR_ERR
         and cl,al
-        cmp cl,ATA_SR_ERR
+        cmp cl,ATA_SR_ERR ; an error that I am checking for
         je .error
-        mov cl,ATA_SR_DRQ
+        mov cl,ATA_SR_DRQ ; if it is not equal to drq then jump to ready
         and cl,al
         cmp cl,ATA_SR_DRQ
         jne .check_ready
         jmp .ready
     .error:
-        ; Print error message and exit
+       ;this just prints an error message and exits
         mov rsi,ata_error_msg
         call video_print
         jmp .out
     .ready:
-        ; Read from base port 256 words â†’ ATA Identify Configuration Data
+        ; Read from base port 256 words which are the ATA Identify Configuration Data that I want to retrivef from the disk
         mov rsi,ata_identify_msg
         call video_print
-        mov rdx,[ata_base_io_ports+rdi]
-        mov si,word [ata_identify_buffer_index]
-        add rdi,ata_identify_buffer
+        mov rdx,[ata_base_io_ports+rdi] ;stroing the port number
+        mov si,word [ata_identify_buffer_index] ; store in si the buffer I am reading to
+        add rdi,ata_identify_buffer; now rdi contains the buffer
         mov rcx, 256
         xor rbx,rbx
-        rep insw
+        rep insw ; read 256 words from the port in a loop that will retrieve 512 bytes into the bufer I have in rdi 
         add word [ata_identify_buffer_index],256
         call ata_print_info
     .out:
     popaq
     ret
-ata_print_info:
+ata_print_info: ; this prints out the data we collected from the disk
     pushaq
-    mov byte [ata_identify_buffer+39],0x0 ; Setting a null character after serial
-    mov rsi, ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.serial ; Printing a null character after serial
+    mov byte [ata_identify_buffer+39],0x0 
+    mov rsi, ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.serial ; printing th eserial number
     call video_print
     mov rsi,comma
     call video_print
     mov byte [ata_identify_buffer+50],0x0
-    mov rsi, ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.fw_version ; Printing a null character after serial
+    mov rsi, ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.fw_version ; Printing the firmware version
     call video_print
     mov rsi,comma
     call video_print
     xor rdi,rdi
-    mov rdi, qword [ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.lba_48_sectors] ; Printing number of LBA Sectors
+    mov rdi, qword [ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.lba_48_sectors] ; Printing number of LBA Sectors I have in the disk 
     call video_print_hexa
     mov ax, 0000010000000000b
-    and ax,word [ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.command_set5]; Checking LBA-48 bit
+    and ax,word [ata_identify_buffer+ATA_IDENTIFY_DEV_DUMP.command_set5]; Printing what mode of LBA I have meaning checking I have 48 or the normal 28
     cmp ax,0x0
     je .out
     mov rsi,comma
